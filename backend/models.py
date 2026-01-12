@@ -5,6 +5,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
+# wallet -> wallet_balances
+# wallet -> transactions
+
 
 class Wallet(Base):
     __tablename__ = "wallets"
@@ -16,6 +19,7 @@ class Wallet(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     balances: Mapped[list["WalletBalance"]] = relationship(back_populates="wallet")
+    transactions: Mapped[list["Transaction"]] = relationship(back_populates="wallet")
 
 
 class WalletBalance(Base):
@@ -28,3 +32,18 @@ class WalletBalance(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     wallet: Mapped["Wallet"] = relationship(back_populates="balances")
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    wallet_id: Mapped[int] = mapped_column(ForeignKey("wallets.id"), index=True)
+    amount: Mapped[Decimal] = mapped_column(Numeric(36, 18))
+    transaction_type: Mapped[str] = mapped_column(String(20)) # send receive 
+    from_address: Mapped[str] = mapped_column(String(255))
+    to_address: Mapped[str] = mapped_column(String(255))
+    status: Mapped[str] = mapped_column(String(20)) # pending confirmed failed
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    failed_reason: Mapped[str] = mapped_column(String(255))
+    wallet: Mapped["Wallet"] = relationship(back_populates="transactions")

@@ -11,6 +11,18 @@ class WalletBalanceResponse(BaseModel):
 
     model_config = {"from_attributes": True}
 
+class TransactionResponse(BaseModel):
+    id: int
+    amount: Decimal
+    transaction_type: str
+    from_address: str
+    to_address: str
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    failed_reason: str
+    model_config = {"from_attributes": True}
+
 
 class WalletResponse(BaseModel):
     id: int
@@ -19,7 +31,7 @@ class WalletResponse(BaseModel):
     address: str
     created_at: datetime
     balances: list[WalletBalanceResponse]
-
+    transactions: list[TransactionResponse]
     model_config = {"from_attributes": True}
 
 
