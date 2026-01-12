@@ -3,8 +3,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 from database import Base, engine, get_db
-from models import Wallet, WalletBalance
-from schemas import WalletResponse, WalletsByBlockchainResponse
+from models import Wallet, WalletBalance, Transaction
+from schemas import WalletResponse, WalletsByBlockchainResponse, TransactionResponse
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -85,6 +85,15 @@ def get_wallet(wallet_id: int, db: Session = Depends(get_db)):
 
 
 # TODO: Add GET /wallets/{wallet_id}/transactions endpoint
+#offset based pagination
+# filter by transaction type (send, receive, swap)
+# filter by date range
+# proper response schema
+@app.get("/wallets/{wallet_id}/transactions", response_model=list[TransactionResponse])
+def get_wallet_transactions(wallet_id: int, offset: int = 0, limit: int = 10, db: Session = Depends(get_db)): 
+    """Get all transactions for a wallet."""
+    transactions = db.query(Transaction).filter(Transaction.wallet_id == wallet_id).offset(offset).limit(limit).all()
+    return transactions
 
 
 if __name__ == "__main__":
