@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Wallet } from '../types';
+import { useState, useEffect } from "react";
+import { Wallet } from "../types";
+import { TransactionList } from "./TransactionList";
 
 interface WalletDetailProps {
   walletId: number;
@@ -15,12 +16,12 @@ export function WalletDetail({ walletId }: WalletDetailProps) {
       try {
         const response = await fetch(`/api/wallets/${walletId}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch wallet');
+          throw new Error("Failed to fetch wallet");
         }
         const data = await response.json();
         setWallet(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -38,7 +39,7 @@ export function WalletDetail({ walletId }: WalletDetailProps) {
   if (error || !wallet) {
     return (
       <div className="bg-red-50 text-red-700 p-4 rounded-lg">
-        {error || 'Wallet not found'}
+        {error || "Wallet not found"}
       </div>
     );
   }
@@ -79,6 +80,7 @@ export function WalletDetail({ walletId }: WalletDetailProps) {
       </div>
 
       {/* TODO: Add Recent Transactions section here */}
+      <TransactionList walletId={walletId} />
     </div>
   );
 }
